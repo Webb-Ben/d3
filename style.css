@@ -1,0 +1,70 @@
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #001030;
+        background: #001933;
+        border: 0;
+        color: rgb(218,218,218);
+        font-family: "SF Mono Medium";
+        font-size: system-ui;
+        font-weight: system-ui;
+        border-style: none;
+        shadow: none;
+/*        font-family: system-ui;*/
+    }
+    a:link {
+        color: #e38daf;
+        text-decoration: none;
+    }
+    a:visited {
+        color: #9c96e9;
+    }
+    .state {
+      fill: #aaa;
+      opacity: 0.1;
+    }
+    .county {
+      opacity: 0.3;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #eee;
+        background: #eee;
+        border: 0;
+        color: rgb(32,32,32);
+        font-family: "SF Mono Medium";
+        font-size: system-ui;
+        font-weight: system-ui;
+        border-style: none;
+        shadow: none;
+    }
+    a:link {
+        color: #b43222;
+        text-decoration: none;
+    }
+    a:visited {
+        color: #963fa0;
+    }
+    .state {
+      fill: #aaa;
+      opacity: 0.1;
+    }
+    .county {
+      opacity: 0.7;
+    }
+    
+}
+
+.border {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 0.25;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.mask {
+    opacity: 0.0;
+    cursor: crosshair;
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>NJS Subnet Calculator</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="RB">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	</head>
+
+	<body>
+		<div class="container">
+			<h1>Subnet Calculator</h1>
+	
+		  <p>Enter any IP address in the subnet and the prefix length.</p>
+						
+                <form class="well" style="display:block" border=none>
+        
+				 <legend>Subnet Prefix</legend>
+				 <div class="control-group">
+				 <label class="control-label">IP address / prefix length</label>
+				 <div class="controls">
+                     <input type="number"	class="span1" id="b1" min="0" max="255" value="137" border=none > .
+				 <input type="number"	class="span1" id="b2" min="0" max="255" value="146" > .
+				 <input type="number"	class="span1" id="b3" min="0" max="255" value="4" > .
+				 <input type="number"	class="span1" id="b4" min="0" max="255" value="32" > / 					 
+				 <input type="number"	class="span1" id="preflen" min="0" max="30" value="22" >				 					 
+				 <p class="help-block">Enter values between 0 and 255 for the bytes of the IP 
+					 address and between 0 and 30 for the prefix.</p>
+			   </div>
+				 </div>
+				 
+				 <div class="form-actions">
+ 					<button class="btn btn-primary">Submit</button>
+				 </div>
+            
+				</form>
+									
+				<div class="well" id="results" style="display:none;" >
+					<legend>Results</legend>
+	        <table class="table-bordered">
+	          <thead>
+	            <tr><th>Description</th><th>Value</th></tr>
+	          </thead>
+	          <tbody>						
+							<tr><td>Subnet address</td><td id="subnet"> </td></tr>
+							<tr><td>First host address</td><td id="first"> </td></tr>
+							<tr><td>Entered address</td><td id="entered"> </td></tr>
+							<tr><td>Last host address</td><td id="last"> </td></tr>
+							<tr><td>Subnet broadcast address</td><td id="broadcast"> </td></tr>
+							<tr><td>Netmask</td><td id="netmask"> </td></tr>
+	          </tbody>
+			    </table>  
+				</div>
+		</div>
+	<script>
+	$("form").submit(function(f) {
+		f.preventDefault();
+		$.ajax({
+			url: "/prefcalc",
+			data: "b1="+$('#b1').val()+"&b2="+$('#b2').val()+"&b3="+
+				$('#b3').val()+"&b4="+$('#b4').val()+"&preflen="+$('#preflen').val(),
+			type: "GET",
+			success: function(data) {
+				var results = JSON.parse(data);
+				$("#subnet").html(results["subnet"]);
+				$("#first").html(results["first"]);
+				$("#entered").html(results["entered"]);
+				$("#last").html(results["last"]);
+				$("#broadcast").html(results["broadcast"]);
+				$("#netmask").html(results["netmask"]);
+				$("#results").show();
+			},
+			error: function(e) {
+				alert("prefcalc not implemented: "+e.status+": "+e.statusText + "\n\nIf you are looking at the file posted a part of the assignment description, the AJAX response is not provided, it is your task to implement it. If you served the file from your own server, it did not respond correctly to the AJAX request for \"/prefcalc\"");
+			}
+		});
+	});
+	</script>
+	</body>
+</html>
