@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="BW">
+    <title>test map</title
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
+    <script src="https://d3js.org/d3-geo.v2.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+</head>
+<body>
+   <div class = "map"> US Map </div>
+   <div class = "container"> </div>
+</body>
+
+    <script>
+        const width = 1200,
+              height = 750;
+
+        const svg = d3.select(".map")
+                      .append("svg")
+                      .attr("viewBox", [0, 0, width, height]);
+        
+        const c = d3.select(".container");
+        
+        const path = d3.geoPath()
+         .projection(null);
+            
+        //var counties = new Object();
+        //counties = build_counties();
+        //console.log(counties);
+        //const cvd = covid_nyt_data();
+
+        var g = svg.append("g");
+        var mask = svg.append("g")
+                      .attr("class", mask);
+        var focus = null;
+        
+        build_states();
+        build_counties();
+        
+        var states = c.selectAll(".state").clone();
+        console.log(states);
+        
+        g.merge(states).enter().append().attr("d", path);
+        
+        function build_states(){
+            d3.json("./build/us.json", async function(us) {
+            c.append("g").selectAll("path").data(topojson.feature(us, us.objects.states).features).enter().append("path").attr("d", path).attr("class", "state");
+            });
+        };
+        
+        function build_counties(){
+            d3.json("./build/us.json", async function(us) {
+            c.append("g").selectAll("path").data(topojson.feature(us, us.objects.states).features).enter().append("path").attr("d", path).attr("class", "county");
+            });
+        };
+    
+    </script>
+
+</html>
