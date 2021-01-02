@@ -15,7 +15,6 @@ const zoom = d3.zoom();
 const path = d3.geoPath()
                .projection(null);
 
-//var c = svg.append("g").classed("container", true);
 var g = svg.append("g").classed("graphic", true);
 var m = svg.append("g").classed("mask", true);
 var focus = null;
@@ -25,21 +24,21 @@ m = build_i_states(m);
 
 
 function build_i_states(container){
-    d3.json("./build/us.json", function(us) {
+    d3.json("https://raw.githubusercontent.com/Webb-Ben/d3/main/build/us.json?token=AJRV3U3O5DLPOGBGD2T7KS276DWNI", function(us) {
     container.append("g").classed("states", true).selectAll("path").data(topojson.feature(us, us.objects.states).features).enter().append("path").classed("states", true).on("mouseover", onMouseOver).on("mouseout", onMouseOut).on("click", clicked).attr("d", path);
     });
     return container;
 };
             
 function build_i_counties(container){
-    d3.json("./build/us.json", function(us) {
+    d3.json("https://raw.githubusercontent.com/Webb-Ben/d3/main/build/us.json?token=AJRV3U3O5DLPOGBGD2T7KS276DWNI", function(us) {
     container.append("g").classed("counties",true).selectAll("path").data(topojson.feature(us, us.objects.counties).features).enter().append("path").classed("county", true).on("mouseover", onMouseOver).on("mouseout", onMouseOut).on("click", clicked).attr("d", path);
     });
     return container;
 };
 
 function build_d_counties(container){
-    d3.json("./build/us.json", function(us) {
+    d3.json("https://raw.githubusercontent.com/Webb-Ben/d3/main/build/us.json?token=AJRV3U3O5DLPOGBGD2T7KS276DWNI", function(us) {
     d3.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv", function(error, data){
            var covid_data = {};
            data.forEach( function(d){ covid_data[+d.fips] = +d.cases; });
@@ -64,14 +63,14 @@ function build_d_counties(container){
 };
 
 function build_states(container){
-    d3.json("./build/us.json", function(us) {
+    d3.json("https://raw.githubusercontent.com/Webb-Ben/d3/main/build/us.json?token=AJRV3U3O5DLPOGBGD2T7KS276DWNI", function(us) {
     container.append("g").classed("states", true).selectAll("path").data(topojson.feature(us, us.objects.states).features).enter().append("path").attr("class", "state").attr("d", path);
     });
     return container;
 };
             
 function build_counties(container){
-    d3.json("./build/us.json", function(us) {
+    d3.json("https://raw.githubusercontent.com/Webb-Ben/d3/main/build/us.json?token=AJRV3U3O5DLPOGBGD2T7KS276DWNI", function(us) {
     container.append("g").classed("counties", true).selectAll("path").data(topojson.feature(us, us.objects.counties).features).enter().append("path").attr("class", "county").attr("d", path);
     });
     return container;
