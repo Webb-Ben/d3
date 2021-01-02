@@ -9,7 +9,6 @@
         font-weight: system-ui;
         border-style: none;
         shadow: none;
-/*        font-family: system-ui;*/
     }
     a:link {
         color: #e38daf;
@@ -18,12 +17,10 @@
     a:visited {
         color: #9c96e9;
     }
-    .state {
-      fill: #aaa;
-      opacity: 0.1;
-    }
-    .county {
-      opacity: 0.3;
+    .mask {
+           fill: #DDD;
+           opacity: 0.25;
+           cursor: crosshair;
     }
 }
 
@@ -46,15 +43,17 @@
     a:visited {
         color: #963fa0;
     }
-    .state {
-      fill: #aaa;
-      opacity: 0.1;
-    }
-    .county {
-      opacity: 0.7;
-    }
     
+    .mask {
+        fill: #333;
+        opacity: 0.25;
+        cursor: crosshair;
+    }
 }
+
+/*.state {*/
+/*  fill: inherit;*/
+/*}*/
 
 .border {
   fill: none;
@@ -64,7 +63,10 @@
   stroke-linecap: round;
 }
 
-.mask {
-    opacity: 0.0;
-    cursor: crosshair;
+.container {
+    fill: #fff; 
+    opacity: 0;
 }
+
+
+

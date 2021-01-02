@@ -22,22 +22,18 @@ d3.json("./build/us.json", function(error, us) {
 if (error) return console.error(error);
     
     d3.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv", function(error, data){
+        console.log(data);
         if (error) return console.error(error);
            var covid_data = {};
-           if (error) return console.error(error);
-           
            data.forEach(function(d) {
                     covid_data[+d.fips] = +d.cases;
            });
-           
+           console.log(covid_data, Object.keys(covid_data));
+
            var color = d3.scaleQuantize()
            .domain(Object.values(covid_data))
-//           .range(["#0A2F51", "#0E4D64", "#137177", "#188977", "#1D9A6C", "#39A96B", "#74C67A", "#99D492", "#BFE1B0", "#DEEDCF"]);
            .range(["#800072", "#8F006C", "#9F0064", "#AF0058", "#BF004A", "#CF0039", "#DF0026", "#EF0011", " #FF0500", "#FD2602", "#FB4605", "#F86507", "#F68209", "#F49F0B", "#F2BA0D", "#EFD510", "#EDED12"]);
-
-
            
-            
            const counties = g.append("g")
             .selectAll("path")
             .data(topojson.feature(us, us.objects.counties).features)
@@ -47,6 +43,7 @@ if (error) return console.error(error);
            .on("mouseout", onMouseOut)
            .on("click", clicked)
             .style("fill", function(d) {
+                console.log(covid_data[+d.id]);
                  return color(covid_data[+d.id]);
              })
             .attr("class", "county")
@@ -72,11 +69,11 @@ if (error) return console.error(error);
 
     
     function onMouseOver(event, d) {
-        d3.select(this).style("opacity", 0.95);
+        d3.select(this).style("opacity", 0.7);
     };
 
     function onMouseOut(event, d) {
-        d3.select(this).style("opacity", 0.1);
+        d3.select(this).style("opacity", 0.25);
     };
 
 function reset() {
