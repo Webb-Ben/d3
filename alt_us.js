@@ -1,122 +1,107 @@
-const width = 1200,
-      height = 750;
+function build_i_states(container){
+    d3.json("./build/us.json", function(us) {
+    container.append("g").classed("states", true).selectAll("path").data(topojson.feature(us, us.objects.states).features).enter().append("path").classed("states", true).on("mouseover", onMouseOver).on("mouseout", onMouseOut).on("click", clicked).attr("d", path);
+    });
+    return container;
+};
+            
+function build_i_counties(container){
+    d3.json("./build/us.json", function(us) {
+    container.append("g").classed("counties",true).selectAll("path").data(topojson.feature(us, us.objects.counties).features).enter().append("path").classed("county", true).on("mouseover", onMouseOver).on("mouseout", onMouseOut).on("click", clicked).attr("d", path);
+    });
+    return container;
+};
 
-const svg = d3.select("body")
-              .append("svg")
-              .attr("viewBox", [0, 0, width, height])
-              .on("dblclick", reset);
-
-const transition = d3.transition();
-const zoom = d3.zoom()
-               .scaleExtent([1, 8]);
-const path = d3.geoPath()
-               .projection(null);
-
-var g = svg.append("g");
-var mask = svg.append("g")
-              .attr("class", mask);
-
-var focus = null;
-
-d3.json("./build/us.json", function(error, us) {
-if (error) return console.error(error);
-    
+function build_d_counties(container){
+    d3.json("build/us.json", function(us) {
     d3.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv", function(error, data){
-        console.log(data);
-        if (error) return console.error(error);
            var covid_data = {};
-           data.forEach(function(d) {
-                    covid_data[+d.fips] = +d.cases;
-           });
-           console.log(covid_data, Object.keys(covid_data));
-
-           var color = d3.scaleQuantize()
-           .domain(Object.values(covid_data))
-           .range(["#800072", "#8F006C", "#9F0064", "#AF0058", "#BF004A", "#CF0039", "#DF0026", "#EF0011", " #FF0500", "#FD2602", "#FB4605", "#F86507", "#F68209", "#F49F0B", "#F2BA0D", "#EFD510", "#EDED12"]);
+           data.forEach( function(d){ covid_data[+d.fips] = +d.cases; });
+          
+           var c = d3.scaleLog().domain(d3.extent(Object.values(covid_data))).range([0,1]);
            
-           const counties = g.append("g")
+           container.append("g")
+            .classed("counties", true)
             .selectAll("path")
             .data(topojson.feature(us, us.objects.counties).features)
             .enter()
             .append("path")
-           .on("mouseover", onMouseOver)
-           .on("mouseout", onMouseOut)
-           .on("click", clicked)
             .style("fill", function(d) {
-                console.log(covid_data[+d.id]);
-                 return color(covid_data[+d.id]);
+                 var v = c(covid_data[+d.id]);
+                 return isNaN(v) ? '#FF7F50':d3.interpolateViridis(v);
              })
             .attr("class", "county")
             .attr("d", path);
            
-           g.append("path")
+           
+           });
+
+           container.append("path")
            .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
            .attr("class", "border border--state")
            .attr("d", path);
+
     });
+    return container;
+};
 
-    mask.append("g")
-    .selectAll("path")
-    .data(topojson.feature(us, us.objects.states).features)
-    .enter()
-    .append("path")
-    .on("mouseover", onMouseOver)
-    .on("mouseout", onMouseOut)
-    .on("click", clicked)
-    .attr("class", "state")
-    .attr("d", path);
-});
+function build_states(container){
+    d3.json("./build/us.json", function(us) {
+    container.append("g").classed("states", true).selectAll("path").data(topojson.feature(us, us.objects.states).features).enter().append("path").attr("class", "state").attr("d", path);
+    });
+    return container;
+};
+            
+function build_counties(container){
+    d3.json("./build/us.json", function(us) {
+    container.append("g").classed("counties", true).selectAll("path").data(topojson.feature(us, us.objects.counties).features).enter().append("path").attr("class", "county").attr("d", path);
+    });
+    return container;
+};
 
-    
-    function onMouseOver(event, d) {
-        d3.select(this).style("opacity", 0.7);
-    };
+function onMouseOver(event, d) {
+    d3.select(this).style("opacity", 0.25);
+};
 
-    function onMouseOut(event, d) {
-        d3.select(this).style("opacity", 0.25);
-    };
+function onMouseOut(event, d) {
+    d3.select(this).style("opacity", 1);
+};
 
 function reset() {
    if (focus != null){
-       g
-       .transition()
-       .duration(750)
+       m.select("g").remove();
+       m = build_i_states(m);
+       g.transition(t)
        .attr('transform',
              'translate('+width/2 +','+height/2+')scale('+1+')translate('+-width/2+','+-height/2+')');
+       m
+       .transition(t)
+       .attr('transform',
+             'translate('+width/2 +','+height/2+')scale('+1+')translate('+-width/2+','+-height/2+')');
+       
        focus = null;
-       d3.json("./build/us.json", function(error, us) {
-       mask.append("g")
-       .selectAll("path")
-       .data(topojson.feature(us, us.objects.states).features)
-       .enter()
-       .append("path")
-       .on("mouseover", onMouseOver)
-       .on("mouseout", onMouseOut)
-       .on("click", clicked)
-       .attr("class", "state")
-       .attr("d", path);
-               });
-   }
- }
+   };
+ };
 
-    function clicked(d) {
-      var x0, y0, x1, y1, k;
-      if (focus != d){
+function clicked(d) {
+    var x0, y0, x1, y1, k;
+    if (focus != d){
+        
         [[x0, y0], [x1, y1]] = path.bounds(d);
-        event.stopPropagation();
         k = Math.min(8, 0.7 / Math.max((x1 - x0) / width, (y1 - y0) / height));
+        if (d3.select(this).classed('states')){
+            m = build_i_counties(m);
+            m.select('.states').remove();
+        }
         focus = d;
-        mask.remove();
-        g.transition().duration(750)
+        event.stopPropagation();
+        g.transition(t)
          .attr('transform',
                'translate('+width/2 +','+height/2+')scale('+k+')translate('+-(x0+x1)/2+','+-(y0+y1)/2+')');
-                     } else { reset(); };
-     
+        m.transition(t)
+         .attr('transform',
+              'translate('+width/2 +','+height/2+')scale('+k+')translate('+-(x0+x1)/2+','+-(y0+y1)/2+')');
+                     } else {
+                     reset();
     };
-    
-    function zoomed(event) {
-        var {transform} = event;
-        g.attr("transform", transform);
-        g.attr("stroke-width", 1 / transform.k);
-    }
-
+};
