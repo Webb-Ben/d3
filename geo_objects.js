@@ -1,37 +1,86 @@
 /**
-Ben Webb
-covid_is.js
-1.10.2021
-*/
+ Ben Webb
+ geo_objects.js
+ 1.10.2021
+ */
 
-const width = 960,
-      height = 600;
-const st = ["states", "state"],
-      co = ["counties", "county"];
+let cvd = new Map();
+d3.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv")
+  .get(function(data){ data.forEach( function(d){ cvd.set(d.fips, d); }); });
+console.log(cvd.size , "hit");
 
-const svg = d3.select(".chart")
-              .append("svg")
-              .attr("viewBox", [0, 0, width, height])
-              .on("dblclick", reset);
-
-const t = d3.transition()
-        .duration(750)
-        .ease(d3.easeCubic);
-
-const zoom = d3.zoom();
-
-const path = d3.geoPath()
-               .projection(null);
-
-var g = svg.append("g").classed("graphic", true);
-var m = svg.append("g").classed("mask", true);
-var focus = null;
-
-new states_geo(m).i().d();
-new counties_geo(g).d().data();
+var us;
+$.ajax({
+  dataType: "json",
+  url: "build/us.json",
+  async: false,
+  success: function(data){us = data}
+});
 
 
-//build(m, gl = st, d = true, data = null, i = true);
+
+class us_geo {
+    constructor(gc, gl){
+        this._geo = gc.append("g")
+                      .classed(gl[0], true)
+                        .selectAll("path")
+                        .data(topojson.feature(us, us.objects[gl[0]]).features)
+                        .enter()
+                        .append("path")
+                        .classed(gl[1], true)
+                        .attr("d", path);
+        return this
+    }
+    
+    i (){
+        this._geo.on("mouseover", onMouseOver)
+                 .on("mouseout", onMouseOut)
+                 .on("mousemove", onMouseMove)
+                 .on("click", clicked);
+        return this;
+    }
+    
+    d () {
+        this._geo.attr("data-county", function(d) {return d.properties.county;})
+                 .attr("data-state", function(d) { return d.properties.state;})
+                 .attr("data-population", function(d) {return d.properties.population;});
+        return this;
+    }
+    
+    enter(){
+        var color = d3.scaleLog().domain(d3.extent(Object.values(cvd))).range([1,0]);
+        this._geo.attr("data-cases", function(d) { return cvd.get(""+d.id)})
+//           .attr("fill", function(d) {
+//                 var v = color(data[+d.id]);
+//                 return isNaN(v) ? '#FF7F50':d3.interpolateViridis(v);
+//                 });
+        return this
+    }
+    
+    data() {
+        var cvd = {};
+        d3.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-counties.csv", function(data){ data.forEach( function(d){ cvd[+d.fips] = +d.cases; });
+        
+        var color = d3.scaleLog().domain(d3.extent(Object.values(cvd))).range([1,0]);
+        this._geo.attr("data-cases", function(d) { console.log( cvd.get(d.id) ); return cvd.get(d.id)})
+                 .attr("fill", function(d) { var v = color(cvd[+d.id]); return isNaN(v) ? '#FF7F50':d3.interpolateViridis(v);});
+        });
+        return this;
+    }
+}
+
+class counties_geo extends us_geo {
+    constructor(gc){
+        super(gc, ["counties", "county"]);
+    }
+}
+                        
+class states_geo extends us_geo {
+    constructor(gc, gi, gd){
+        super(gc, ["states", "state"])
+    }
+}
+
 
 function build(container, gl, d = false, data = null, i = false){
     /**
