@@ -4,22 +4,50 @@
 <head>
     <meta charset="utf-8">
     <title>united state map</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
     <meta name="author" content="BW">
-    <link rel="stylesheet" type="text/css" href="f/style.css">
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-array.v2.min.js"></script>
     <script src="https://d3js.org/d3-geo.v2.min.js"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js'></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="f/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="f/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="f/favicon-16x16.png">
+    <link rel="manifest" href="f/site.webmanifest">
+    <link rel="stylesheet" type="text/css" href="f/style.css">
 
 </head>
 <body>
-    <div class="chart">
-
-    </div>
+    <div id="chart"> </div>
 </body>
+
 <script src="geo_objects.js"></script>
-<script src="covid_us.js"> </script>
+<script>
+const width = 960,
+      height = 600;
+
+const svg = d3.select("#chart")
+              .append("svg")
+              .attr("viewBox", [0, 0, width, height])
+              .on("dblclick", reset);
+
+const t = d3.transition()
+            .duration(750)
+            .ease(d3.easeCubic);
+
+const zoom = d3.zoom();
+
+const path = d3.geoPath()
+               .projection(null);
+
+const g = svg.append("g").classed("graphic", true);
+const m = svg.append("g").classed("mask", true);
+var focus = null;
+       
+new counties_geo(g).d().data();
+new states_geo(m).i().d();
+</script>
 
 </html>
